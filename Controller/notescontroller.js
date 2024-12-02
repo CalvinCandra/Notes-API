@@ -1,17 +1,27 @@
 import { query } from "../Database/database.js";
 
+// get data
+const getNotes = async (req, res) => {
+  try {
+    // Query untuk mendapatkan data
+    const results = await query(`SELECT * FROM notes`);
+
+    return res.status(200).json({
+      msg: "Berhasil",
+      data: results,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      msg: "Gagal mendapatkan data",
+      error: error.message,
+    });
+  }
+};
+
 // update notes
 const updateNotes = async (req, res) => {
   const { title, note } = req.body;
   const { id } = req.params;
-
-  // cek apakah id ada atau tidak
-  const cek = await query("SELECT * FROM notes WHERE id = ?", [id]);
-  if (cek.length === 0) {
-    return res.status(404).json({
-      message: "Notes Not Found",
-    });
-  }
 
   try {
     await query("UPDATE notes SET title = ?, note = ? WHERE id = ?", [
@@ -33,4 +43,4 @@ const updateNotes = async (req, res) => {
   }
 };
 
-export { updateNotes };
+export { getNotes, updateNotes };
