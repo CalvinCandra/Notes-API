@@ -18,6 +18,37 @@ const getNotes = async (req, res) => {
   }
 };
 
+// add data
+const addnotes = async (req, res) => {
+  const { title, note } = req.body; 
+  
+  if (!title || !note) {
+    return res.status(400).json({
+      msg: "Title dan note harus diisi",
+    });
+  }
+
+  try {
+    const result = await query(
+      `INSERT INTO notes (title, datetime, note) VALUES (?, NOW(), ?)`,
+      [title, note]
+    );
+
+    return res.status(200).json({
+      msg: "Notes berhasil ditambahkan",
+      data: {
+        ...req.body,
+      },
+    });
+  } catch (error) {
+    return res.status(400).json({
+      msg: "Gagal menambahkan data",
+      error: error.message,
+    });
+  }
+};
+
+
 // update notes
 const updateNotes = async (req, res) => {
   const { title, note } = req.body;
@@ -43,4 +74,4 @@ const updateNotes = async (req, res) => {
   }
 };
 
-export { getNotes, updateNotes };
+export { getNotes, updateNotes, addnotes };
