@@ -18,4 +18,29 @@ const getNotes = async (req, res) => {
   }
 };
 
-export { getNotes };
+// update notes
+const updateNotes = async (req, res) => {
+  const { title, note } = req.body;
+  const { id } = req.params;
+
+  try {
+    await query("UPDATE notes SET title = ?, note = ? WHERE id = ?", [
+      title,
+      note,
+      id,
+    ]);
+    res.status(200).json({
+      message: "Notes Berhasil Update",
+      data: {
+        ...req.body,
+      },
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message: "Notes Gagal Update",
+      error,
+    });
+  }
+};
+
+export { getNotes, updateNotes };

@@ -1,8 +1,9 @@
 import express from "express";
-import { getNotes } from "../../Controller/notescontroller.js";
+import { getNotes, updateNotes } from "../../Controller/notescontroller.js";
 
 const notesrouter = express();
 
 notesrouter.get("/getnotes", getNotes);
+notesrouter.put("/update/:id", updateNotes);
 
 export default notesrouter;
