@@ -20,8 +20,8 @@ const getNotes = async (req, res) => {
 
 // add data
 const addnotes = async (req, res) => {
-  const { title, note } = req.body; 
-  
+  const { title, note } = req.body;
+
   if (!title || !note) {
     return res.status(400).json({
       msg: "Title dan note harus diisi",
@@ -48,7 +48,6 @@ const addnotes = async (req, res) => {
   }
 };
 
-
 // update notes
 const updateNotes = async (req, res) => {
   const { title, note } = req.body;
@@ -74,4 +73,23 @@ const updateNotes = async (req, res) => {
   }
 };
 
-export { getNotes, updateNotes, addnotes };
+// get one note
+const getNoteById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await query("SELECT * FROM notes WHERE id = ?", [id]);
+
+    return res.status(200).json({
+      msg: "Berhasil",
+      data: result[0],
+    });
+  } catch (error) {
+    return res.status(400).json({
+      msg: "Gagal mendapatkan data",
+      error: error.message,
+    });
+  }
+};
+
+export { getNotes, updateNotes, addnotes, getNoteById };
