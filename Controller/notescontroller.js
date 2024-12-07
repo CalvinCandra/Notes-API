@@ -22,12 +22,6 @@ const getNotes = async (req, res) => {
 const addnotes = async (req, res) => {
   const { title, note } = req.body;
 
-  if (!title || !note) {
-    return res.status(400).json({
-      msg: "Title dan note harus diisi",
-    });
-  }
-
   try {
     const result = await query(
       `INSERT INTO notes (title, datetime, note) VALUES (?, NOW(), ?)`,
@@ -54,11 +48,10 @@ const updateNotes = async (req, res) => {
   const { id } = req.params;
 
   try {
-    await query("UPDATE notes SET title = ?, note = ? WHERE id = ?", [
-      title,
-      note,
-      id,
-    ]);
+    await query(
+      "UPDATE notes SET title = ?, datetime = NOW() ,note = ? WHERE id = ?",
+      [title, note, id]
+    );
 
     const check = await query("SELECT id FROM notes WHERE id = ?", [id]);
     if (check.length === 0) {
@@ -66,7 +59,7 @@ const updateNotes = async (req, res) => {
         msg: "Maaf, data dengan ID ini tidak ditemukan",
       });
     }
-    
+
     return res.status(200).json({
       message: "Notes Berhasil Update",
       data: {
@@ -107,19 +100,27 @@ const getNoteById = async (req, res) => {
 };
 
 // Delete notes by ID
-export const deleteNotesbyid = async (req, res) => {
+const deleteNotesbyid = async (req, res) => {
+  const { id } = req.params;
+
+  // cek id, apakah ada atau tidak
+  const cek = await query(`SELECT * FROM notes WHERE notes.id = ?`, [id]);
+  if (cek.length === 0) {
+    return res.status(400).json({
+      msg: "Maaf, data dengan ID ini tidak ditemukan",
+    });
+  }
+
   try {
-    const [result] = await db.query("DELETE FROM notes WHERE id = ?", [
-      req.params.id,
-    ]);
-    if (result.affectedRows === 0)
-      return res.status(404).json({ message: "Note not found" });
-    res.json({ message: "Note deleted" });
+    await query("DELETE FROM notes WHERE id = ?", [id]);
+
+    res.status(200).json({ message: "Berhasil" });
   } catch (err) {
-    res.status(500).json({ 
+    res.status(500).json({
       msg: "gagal menghapus",
-      error: err.message });
+      error: err.message,
+    });
   }
 };
 
-export { getNotes, updateNotes, addnotes, getNoteById };
+export { getNotes, updateNotes, addnotes, getNoteById, deleteNotesbyid };
