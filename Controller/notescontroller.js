@@ -59,7 +59,15 @@ const updateNotes = async (req, res) => {
       note,
       id,
     ]);
-    res.status(200).json({
+
+    const check = await query("SELECT id FROM notes WHERE id = ?", [id]);
+    if (check.length === 0) {
+      return res.status(404).json({
+        msg: "Maaf, data dengan ID ini tidak ditemukan",
+      });
+    }
+    
+    return res.status(200).json({
       message: "Notes Berhasil Update",
       data: {
         ...req.body,
@@ -80,6 +88,12 @@ const getNoteById = async (req, res) => {
   try {
     const result = await query("SELECT * FROM notes WHERE id = ?", [id]);
 
+    if (result.length === 0) {
+      return res.status(404).json({
+        msg: "Maaf, data dengan ID ini tidak ditemukan",
+      });
+    }
+
     return res.status(200).json({
       msg: "Berhasil",
       data: result[0],
@@ -91,5 +105,19 @@ const getNoteById = async (req, res) => {
     });
   }
 };
+
+// Delete Notes
+  try {
+    
+    const check = await query("SELECT id FROM notes WHERE id = ?", [id]);
+    if (check.length === 0) {
+      return res.status(404).json({
+        msg: "Maaf, data dengan ID ini tidak ditemukan",
+      });
+    }
+
+  } catch (error) {
+    
+  }
 
 export { getNotes, updateNotes, addnotes, getNoteById };
