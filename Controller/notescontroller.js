@@ -106,18 +106,20 @@ const getNoteById = async (req, res) => {
   }
 };
 
-// Delete Notes
+// Delete notes by ID
+export const deleteNotesbyid = async (req, res) => {
   try {
-    
-    const check = await query("SELECT id FROM notes WHERE id = ?", [id]);
-    if (check.length === 0) {
-      return res.status(404).json({
-        msg: "Maaf, data dengan ID ini tidak ditemukan",
-      });
-    }
-
-  } catch (error) {
-    
+    const [result] = await db.query("DELETE FROM notes WHERE id = ?", [
+      req.params.id,
+    ]);
+    if (result.affectedRows === 0)
+      return res.status(404).json({ message: "Note not found" });
+    res.json({ message: "Note deleted" });
+  } catch (err) {
+    res.status(500).json({ 
+      msg: "gagal menghapus",
+      error: err.message });
   }
+};
 
 export { getNotes, updateNotes, addnotes, getNoteById };
